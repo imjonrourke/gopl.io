@@ -10,6 +10,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"strings"
 	//"io/ioutil"
 	"net/http"
 	"os"
@@ -17,7 +18,11 @@ import (
 
 func main() {
 	for _, url := range os.Args[1:] {
-		resp, err := http.Get(url)
+		var prefixedUrl = url
+		if (!strings.HasPrefix(url, "http://")) {
+			prefixedUrl = "http://" + url
+		}
+		resp, err := http.Get(prefixedUrl)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
 			os.Exit(1)
@@ -29,7 +34,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "fetch: reading %s: %v\n", url, err)
 			os.Exit(1)
 		}
-		fmt.Printf("%s", b)
+		fmt.Printf("Status: %s\n Body: %v", resp.Status, b)
 	}
 }
 
